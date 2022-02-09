@@ -74,15 +74,16 @@ def top(**kwargs):
     """
     if "id" not in kwargs["opts"]:
         return {}
+    _cmd_str = " ".join([
+        _cmd_quote(part)
+        for part in shlex.split(
+            __opts__["master_tops"]["ext_nodes"],
+            posix=salt.utils.platform.is_windows() is False,
+        )
+        + [_cmd_quote(kwargs["opts"]["id"])]
+    ])
     proc = subprocess.run(
-        [
-            _cmd_quote(part)
-            for part in shlex.split(
-                __opts__["master_tops"]["ext_nodes"],
-                posix=salt.utils.platform.is_windows() is False,
-            )
-            + [_cmd_quote(kwargs["opts"]["id"])]
-        ],
+        _cmd_str,
         stdout=subprocess.PIPE,
         check=True,
         shell=True,  # nosec
